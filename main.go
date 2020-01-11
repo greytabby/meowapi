@@ -53,10 +53,10 @@ func run() int {
 	e.Debug = true
 
 	// Routing
-	e.GET("/item", handler.GetItems)
-	e.POST("/item", handler.InsertItem)
-	e.PATCH("/item", handler.UpdateItem)
-	e.DELETE("/item", handler.DeleteItem)
+	e.GET("/api/item", handler.GetItems)
+	e.POST("/api/item", handler.InsertItem)
+	e.PATCH("/api/item", handler.UpdateItem)
+	e.DELETE("/api/item", handler.DeleteItem)
 
 	// Service Start
 	port := os.Getenv("BIND_PORT")
