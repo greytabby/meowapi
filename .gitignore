@@ -13,5 +13,5 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# docker-compose file for testing
-docker-compose.yaml
+# testing directory for docker-compose
+/dev/
