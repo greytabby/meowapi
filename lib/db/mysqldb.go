@@ -88,3 +88,52 @@ func open(dsn string) (*sql.DB, error) {
 	}
 	return db, nil
 }
+
+// GetAllToilets DBからcatテーブルの全てのデータを取得する
+func (mda *MysqlDbAccessor) GetAllToilets() ([]model.Toilet, error) {
+	var toilets []model.Toilet
+	_, err := mda.Db.Select(&toilets,
+		"SELECT * FROM toilet ORDER BY created")
+	if err != nil {
+		return nil, err
+	}
+	return toilets, nil
+}
+
+// GetToilet DBのtoiletテーブルからidに合致するtoiletを1つ返す
+// 見つからなかった場合は空のtoiletとerrorを返す
+func (mda *MysqlDbAccessor) GetToilet(id int64) (model.Toilet, error) {
+	var toilet model.Toilet
+	err := mda.Db.SelectOne(&toilet, "SELECT * FROM toilet WHERE id = ?", id)
+	if err != nil {
+		return model.Toilet{}, err
+	}
+	return toilet, nil
+}
+
+// AddToilet toiletテーブルへデータを1件追加する
+func (mda *MysqlDbAccessor) AddToilet(toilet model.Toilet) error {
+	err := mda.Db.Insert(&toilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateToilet toiletテーブルのデータを1件更新する
+func (mda *MysqlDbAccessor) UpdateToilet(toilet model.Toilet) error {
+	_, err := mda.Db.Update(&toilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteToilet toiletテーブルのデータを1件削除する
+func (mda *MysqlDbAccessor) DeleteToilet(toilet model.Toilet) error {
+	_, err := mda.Db.Delete(&toilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
