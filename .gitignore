@@ -15,3 +15,5 @@
 
 # testing directory for docker-compose
 /dev/
+
+.DS_Store
