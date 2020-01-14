@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/greytabby/meowapi/lib/model"
 	"github.com/greytabby/meowapi/lib/db"
 	"github.com/greytabby/meowapi/lib/handler"
+	"github.com/greytabby/meowapi/lib/model"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -29,7 +29,7 @@ func run() int {
 	defer dbAccessor.Db.Db.Close()
 
 	// Prepare database
-	dbAccessor.Db.AddTableWithName(model.Item{}, "items")
+	dbAccessor.Db.AddTableWithName(model.Cat{}, "cat")
 
 	for i := 0; i < 10; i++ {
 		err = dbAccessor.Db.CreateTablesIfNotExists()
@@ -45,7 +45,7 @@ func run() int {
 	}
 
 	// Create api request handler
-	handler := handler.Handler{Db: dbAccessor}
+	catHandler := handler.CatHandler{Db: dbAccessor}
 
 	// prepare middleware
 	e := echo.New()
@@ -53,10 +53,10 @@ func run() int {
 	e.Debug = true
 
 	// Routing
-	e.GET("/api/item", handler.GetItems)
-	e.POST("/api/item", handler.InsertItem)
-	e.PATCH("/api/item", handler.UpdateItem)
-	e.DELETE("/api/item", handler.DeleteItem)
+	e.GET("/api/cat", catHandler.GetAllCats)
+	e.POST("/api/cat", catHandler.AddCat)
+	e.PUT("/api/cat", catHandler.UpdateCat)
+	e.DELETE("/api/cat", catHandler.DeleteCat)
 
 	// Service Start
 	port := os.Getenv("BIND_PORT")
