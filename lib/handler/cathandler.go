@@ -12,7 +12,7 @@ type CatReader interface {
 	GetCat(id int64) (model.Cat, error)
 }
 
-type CatManipulater interface {
+type CatManipulator interface {
 	AddCat(cat model.Cat) error
 	UpdateCat(cat model.Cat) error
 	DeleteCat(cat model.Cat) error
@@ -21,7 +21,7 @@ type CatManipulater interface {
 // CatDbAccessor catテーブルを操作するinterface
 type CatDbAccessor interface {
 	CatReader
-	CatManipulater
+	CatManipulator
 }
 
 // CatHandler /api/catへのリクエストを処理する

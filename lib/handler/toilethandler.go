@@ -12,7 +12,7 @@ type ToiletReader interface {
 	GetToilet(id int64) (model.Toilet, error)
 }
 
-type ToiletManipulater interface {
+type ToiletManipulator interface {
 	AddToilet(cat model.Toilet) error
 	UpdateToilet(cat model.Toilet) error
 	DeleteToilet(cat model.Toilet) error
@@ -21,7 +21,7 @@ type ToiletManipulater interface {
 // ToiletDbAccessor toiletテーブルを操作するinterface
 type ToiletDbAccessor interface {
 	ToiletReader
-	ToiletManipulater
+	ToiletManipulator
 }
 
 // ToiletHandler /api/toiletへのリクエストを処理する
