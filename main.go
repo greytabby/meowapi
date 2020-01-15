@@ -30,6 +30,7 @@ func run() int {
 
 	// Prepare database
 	dbAccessor.Db.AddTableWithName(model.Cat{}, "cat")
+	dbAccessor.Db.AddTableWithName(model.Toilet{}, "toilet")
 
 	for i := 0; i < 10; i++ {
 		err = dbAccessor.Db.CreateTablesIfNotExists()
@@ -44,19 +45,27 @@ func run() int {
 		log.Printf("Can not create table. %v\n", err)
 	}
 
-	// Create api request handler
-	catHandler := handler.CatHandler{Db: dbAccessor}
-
 	// prepare middleware
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Debug = true
 
+	// Create api request handler
+	catHandler := handler.CatHandler{Db: dbAccessor}
+	toiletHandler := handler.ToiletHandler{Db: dbAccessor}
+
 	// Routing
+	// Cat Endpoint
 	e.GET("/api/cat", catHandler.GetAllCats)
 	e.POST("/api/cat", catHandler.AddCat)
 	e.PUT("/api/cat", catHandler.UpdateCat)
 	e.DELETE("/api/cat", catHandler.DeleteCat)
+
+	// Toilet Endpoint
+	e.GET("/api/toilet", toiletHandler.GetAllToilets)
+	e.POST("/api/toilet", toiletHandler.AddToilet)
+	e.PUT("/api/toilet", toiletHandler.UpdateToilet)
+	e.DELETE("/api/toilet", toiletHandler.DeleteToilet)
 
 	// Service Start
 	port := os.Getenv("BIND_PORT")

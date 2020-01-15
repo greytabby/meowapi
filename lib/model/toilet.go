@@ -10,7 +10,7 @@ type Toilet struct {
 	Id        int64     `json:"id"              db:"id,primarykey,autoincrement"`
 	Name      string    `json:"name"            db:"name,notnull,size:200"`
 	Comment   string    `json:"comment"         db:"comment,size:400"`
-	SandStete int64     `json:"sandstate"       db:"sandstate,notnull"`
+	SandState string    `json:"sandstate"       db:"sandstate,size:50"`
 	Created   time.Time `json:"created"         db:"created,notnull"`
 	Updated   time.Time `json:"updated"         db:"updated,notnull"`
 }
