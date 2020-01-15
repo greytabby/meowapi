@@ -137,3 +137,52 @@ func (mda *MysqlDbAccessor) DeleteToilet(toilet model.Toilet) error {
 	}
 	return nil
 }
+
+// GetAllUseToilets DBからcatテーブルの全てのデータを取得する
+func (mda *MysqlDbAccessor) GetAllUseToilets() ([]model.UseToilet, error) {
+	var usetoilets []model.UseToilet
+	_, err := mda.Db.Select(&usetoilets,
+		"SELECT * FROM usetoilet ORDER BY created")
+	if err != nil {
+		return nil, err
+	}
+	return usetoilets, nil
+}
+
+// GetUseToilet DBのusetoiletテーブルからidに合致するusetoiletを1つ返す
+// 見つからなかった場合は空のusetoiletとerrorを返す
+func (mda *MysqlDbAccessor) GetUseToilet(id int64) (model.UseToilet, error) {
+	var usetoilet model.UseToilet
+	err := mda.Db.SelectOne(&usetoilet, "SELECT * FROM usetoilet WHERE id = ?", id)
+	if err != nil {
+		return model.UseToilet{}, err
+	}
+	return usetoilet, nil
+}
+
+// AddUseToilet usetoiletテーブルへデータを1件追加する
+func (mda *MysqlDbAccessor) AddUseToilet(usetoilet model.UseToilet) error {
+	err := mda.Db.Insert(&usetoilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateUseToilet usetoiletテーブルのデータを1件更新する
+func (mda *MysqlDbAccessor) UpdateUseToilet(usetoilet model.UseToilet) error {
+	_, err := mda.Db.Update(&usetoilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteUseToilet usetoiletテーブルのデータを1件削除する
+func (mda *MysqlDbAccessor) DeleteUseToilet(usetoilet model.UseToilet) error {
+	_, err := mda.Db.Delete(&usetoilet)
+	if err != nil {
+		return err
+	}
+	return nil
+}

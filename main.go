@@ -31,6 +31,7 @@ func run() int {
 	// Prepare database
 	dbAccessor.Db.AddTableWithName(model.Cat{}, "cat")
 	dbAccessor.Db.AddTableWithName(model.Toilet{}, "toilet")
+	dbAccessor.Db.AddTableWithName(model.UseToilet{}, "usetoilet")
 
 	for i := 0; i < 10; i++ {
 		err = dbAccessor.Db.CreateTablesIfNotExists()
@@ -53,6 +54,7 @@ func run() int {
 	// Create api request handler
 	catHandler := handler.CatHandler{Db: dbAccessor}
 	toiletHandler := handler.ToiletHandler{Db: dbAccessor}
+	useToiletHandler := handler.UseToiletHandler{Db: dbAccessor}
 
 	// Routing
 	// Cat Endpoint
@@ -66,6 +68,12 @@ func run() int {
 	e.POST("/api/toilet", toiletHandler.AddToilet)
 	e.PUT("/api/toilet", toiletHandler.UpdateToilet)
 	e.DELETE("/api/toilet", toiletHandler.DeleteToilet)
+
+	// UseToilet Endpoint
+	e.GET("/api/usetoilet", useToiletHandler.GetAllUseToilets)
+	e.POST("/api/usetoilet", useToiletHandler.AddUseToilet)
+	e.PUT("/api/usetoilet", useToiletHandler.UpdateUseToilet)
+	e.DELETE("/api/usetoilet", useToiletHandler.DeleteUseToilet)
 
 	// Service Start
 	port := os.Getenv("BIND_PORT")
