@@ -32,6 +32,7 @@ func run() int {
 	dbAccessor.Db.AddTableWithName(model.Cat{}, "cat")
 	dbAccessor.Db.AddTableWithName(model.Toilet{}, "toilet")
 	dbAccessor.Db.AddTableWithName(model.UseToilet{}, "usetoilet")
+	dbAccessor.Db.AddTableWithName(model.Wash{}, "wash")
 
 	for i := 0; i < 10; i++ {
 		err = dbAccessor.Db.CreateTablesIfNotExists()
@@ -55,6 +56,7 @@ func run() int {
 	catHandler := handler.CatHandler{Db: dbAccessor}
 	toiletHandler := handler.ToiletHandler{Db: dbAccessor}
 	useToiletHandler := handler.UseToiletHandler{Db: dbAccessor}
+	washHandler := handler.WashHandler{Db: dbAccessor}
 
 	// Routing
 	// Cat Endpoint
@@ -74,6 +76,13 @@ func run() int {
 	e.POST("/api/usetoilet", useToiletHandler.AddUseToilet)
 	e.PUT("/api/usetoilet", useToiletHandler.UpdateUseToilet)
 	e.DELETE("/api/usetoilet", useToiletHandler.DeleteUseToilet)
+
+	// Wash Endpoint
+	e.GET("/api/wash", washHandler.GetAllWashes)
+	e.GET("/api/wash/:toiletid", washHandler.GetWashesByToiletId)
+	e.POST("/api/wash", washHandler.AddWash)
+	e.PUT("/api/wash", washHandler.UpdateWash)
+	e.DELETE("/api/wash", washHandler.DeleteWash)
 
 	// Service Start
 	port := os.Getenv("BIND_PORT")
