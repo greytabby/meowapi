@@ -186,3 +186,63 @@ func (mda *MysqlDbAccessor) DeleteUseToilet(usetoilet model.UseToilet) error {
 	}
 	return nil
 }
+
+// GetAllWashes washテーブルの全てのデータを取得する
+func (mda *MysqlDbAccessor) GetAllWashes() ([]model.Wash, error) {
+	var ws []model.Wash
+	_, err := mda.Db.Select(&ws,
+		"SELECT * FROM wash ORDER BY created")
+	if err != nil {
+		return nil, err
+	}
+	return ws, nil
+}
+
+// GetWashesByToiletId washテーブルから特定のToiletIdの全てのデータを取得する
+func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid int64) ([]model.Wash, error) {
+	var ws []model.Wash
+	_, err := mda.Db.Select(&ws,
+		"SELECT * FROM wash WHERE toiletid = ? ORDER BY created", toiletid)
+	if err != nil {
+		return nil, err
+	}
+	return ws, nil
+}
+
+// GetWash DBのwashテーブルからidに合致するwashを1つ返す
+// 見つからなかった場合は空のwashとerrorを返す
+func (mda *MysqlDbAccessor) GetWash(id int64) (model.Wash, error) {
+	var w model.Wash
+	err := mda.Db.SelectOne(&w, "SELECT * FROM wash WHERE id = ?", id)
+	if err != nil {
+		return model.Wash{}, err
+	}
+	return w, nil
+}
+
+// AddWash washテーブルへデータを1件追加する
+func (mda *MysqlDbAccessor) AddWash(wash model.Wash) error {
+	err := mda.Db.Insert(&wash)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateWash washテーブルのデータを1件更新する
+func (mda *MysqlDbAccessor) UpdateWash(wash model.Wash) error {
+	_, err := mda.Db.Update(&wash)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteWash usetoiletテーブルのデータを1件削除する
+func (mda *MysqlDbAccessor) DeleteWash(wash model.Wash) error {
+	_, err := mda.Db.Delete(&wash)
+	if err != nil {
+		return err
+	}
+	return nil
+}
