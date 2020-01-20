@@ -246,3 +246,29 @@ func (mda *MysqlDbAccessor) DeleteWash(wash model.Wash) error {
 	}
 	return nil
 }
+
+// FindUser userテーブルからnameに合致するデータを1件取得する
+func (mda *MysqlDbAccessor) FindUser(name string) (model.User, error) {
+	var u model.User
+	err := mda.Db.SelectOne(&u, "Select * FROM user WHERE name = ?", name)
+	if err != nil {
+		return model.User{}, err
+	}
+	return u, nil
+}
+
+func (mda *MysqlDbAccessor) AddUser(user model.User) error {
+	err := mda.Db.Insert(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (mda *MysqlDbAccessor) DeleteUser(user model.User) error {
+	_, err := mda.Db.Delete(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
