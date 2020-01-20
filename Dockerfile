@@ -5,6 +5,7 @@ RUN go get -v github.com/labstack/echo
 RUN go get -v github.com/go-gorp/gorp
 RUN go get -v github.com/go-sql-driver/mysql
 RUN go get -v github.com/dgrijalva/jwt-go
+RUN go get -v golang.org/x/crypto/bcrypt
 COPY . .
 ENV CGO_ENABLED=0
 ENV GOOS=linux

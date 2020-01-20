@@ -24,10 +24,10 @@ func NewMysqlDbAccessor(dsn string) (*MysqlDbAccessor, error) {
 }
 
 // GetAllCats DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllCats() ([]model.Cat, error) {
+func (mda *MysqlDbAccessor) GetAllCats(uid int64) ([]model.Cat, error) {
 	var cats []model.Cat
 	_, err := mda.Db.Select(&cats,
-		"SELECT * FROM cat ORDER BY created")
+		"SELECT * FROM cat WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +36,9 @@ func (mda *MysqlDbAccessor) GetAllCats() ([]model.Cat, error) {
 
 // GetCat DBのcatテーブルからidに合致するcatを1つ返す
 // 見つからなかった場合は空のcatとerrorを返す
-func (mda *MysqlDbAccessor) GetCat(id int64) (model.Cat, error) {
+func (mda *MysqlDbAccessor) GetCat(id, uid int64) (model.Cat, error) {
 	var cat model.Cat
-	err := mda.Db.SelectOne(&cat, "SELECT * FROM cat WHERE id = ?", id)
+	err := mda.Db.SelectOne(&cat, "SELECT * FROM cat WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Cat{}, err
 	}

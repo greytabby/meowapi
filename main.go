@@ -51,6 +51,7 @@ func run() int {
 	// prepare middleware
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	e.Debug = true
 
 	// Create api request handler
@@ -62,10 +63,14 @@ func run() int {
 
 	// Routing
 	// Cat Endpoint
-	e.GET("/api/cat", catHandler.GetAllCats)
-	e.POST("/api/cat", catHandler.AddCat)
-	e.PUT("/api/cat", catHandler.UpdateCat)
-	e.DELETE("/api/cat", catHandler.DeleteCat)
+	// Use JWT authentication
+	// TODO: apply JWT auth to other endpoint
+	r := e.Group("/api/cat")
+	r.Use(middleware.JWTWithConfig(handler.JWTConfig))
+	r.GET("", catHandler.GetAllCats)
+	r.POST("", catHandler.AddCat)
+	r.PUT("", catHandler.UpdateCat)
+	r.DELETE("", catHandler.DeleteCat)
 
 	// Toilet Endpoint
 	e.GET("/api/toilet", toiletHandler.GetAllToilets)
