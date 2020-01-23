@@ -8,6 +8,7 @@ import (
 
 type Toilet struct {
 	Id        int64     `json:"id"              db:"id,primarykey,autoincrement"`
+	UID       int64     `json:"uid"             db:"uid,notnull"`
 	Name      string    `json:"name"            db:"name,notnull,size:200"`
 	Comment   string    `json:"comment"         db:"comment,size:400"`
 	SandState string    `json:"sandstate"       db:"sandstate,size:50"`

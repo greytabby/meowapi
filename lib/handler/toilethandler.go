@@ -8,8 +8,8 @@ import (
 )
 
 type ToiletReader interface {
-	GetAllToilets() ([]model.Toilet, error)
-	GetToilet(id int64) (model.Toilet, error)
+	GetAllToilets(uid int64) ([]model.Toilet, error)
+	GetToilet(id, uid int64) (model.Toilet, error)
 }
 
 type ToiletManipulator interface {
@@ -31,7 +31,8 @@ type ToiletHandler struct {
 
 // GetAllToilets Toiletテーブルから全てのToiletを返す
 func (th *ToiletHandler) GetAllToilets(c echo.Context) error {
-	toilets, err := th.Db.GetAllToilets()
+	uid := UserIdFromToken(c)
+	toilets, err := th.Db.GetAllToilets(uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "Select: "+err.Error())
@@ -47,6 +48,9 @@ func (th *ToiletHandler) AddToilet(c echo.Context) error {
 		c.Logger().Errorf("Bind: ", err)
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
+
+	uid := UserIdFromToken(c)
+	toilet.UID = uid
 	if err := th.Db.AddToilet(toilet); err != nil {
 		c.Logger().Errorf("Insert: ", err)
 		return c.String(http.StatusBadRequest, "Could not add new toilet.")
@@ -69,7 +73,8 @@ func (th *ToiletHandler) UpdateToilet(c echo.Context) error {
 	}
 
 	// Get cat from db for confirming wheather the user specified cat exist.
-	selectedToilet, err := th.Db.GetToilet(toilet.Id)
+	uid := UserIdFromToken(c)
+	selectedToilet, err := th.Db.GetToilet(toilet.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified cat in the database.")
@@ -100,7 +105,8 @@ func (th *ToiletHandler) DeleteToilet(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Toilet id is not specified.")
 	}
 
-	selectedToilet, err := th.Db.GetToilet(toilet.Id)
+	uid := UserIdFromToken(c)
+	selectedToilet, err := th.Db.GetToilet(toilet.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified toilet.")

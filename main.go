@@ -65,18 +65,18 @@ func run() int {
 	// Cat Endpoint
 	// Use JWT authentication
 	// TODO: apply JWT auth to other endpoint
-	r := e.Group("/api/cat")
+	r := e.Group("/api")
 	r.Use(middleware.JWTWithConfig(handler.JWTConfig))
-	r.GET("", catHandler.GetAllCats)
-	r.POST("", catHandler.AddCat)
-	r.PUT("", catHandler.UpdateCat)
-	r.DELETE("", catHandler.DeleteCat)
+	r.GET("/cat", catHandler.GetAllCats)
+	r.POST("/cat", catHandler.AddCat)
+	r.PUT("/cat", catHandler.UpdateCat)
+	r.DELETE("/cat", catHandler.DeleteCat)
 
 	// Toilet Endpoint
-	e.GET("/api/toilet", toiletHandler.GetAllToilets)
-	e.POST("/api/toilet", toiletHandler.AddToilet)
-	e.PUT("/api/toilet", toiletHandler.UpdateToilet)
-	e.DELETE("/api/toilet", toiletHandler.DeleteToilet)
+	r.GET("/toilet", toiletHandler.GetAllToilets)
+	r.POST("/toilet", toiletHandler.AddToilet)
+	r.PUT("/toilet", toiletHandler.UpdateToilet)
+	r.DELETE("/toilet", toiletHandler.DeleteToilet)
 
 	// UseToilet Endpoint
 	e.GET("/api/usetoilet", useToiletHandler.GetAllUseToilets)

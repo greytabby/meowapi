@@ -90,10 +90,10 @@ func open(dsn string) (*sql.DB, error) {
 }
 
 // GetAllToilets DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllToilets() ([]model.Toilet, error) {
+func (mda *MysqlDbAccessor) GetAllToilets(uid int64) ([]model.Toilet, error) {
 	var toilets []model.Toilet
 	_, err := mda.Db.Select(&toilets,
-		"SELECT * FROM toilet ORDER BY created")
+		"SELECT * FROM toilet WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +102,9 @@ func (mda *MysqlDbAccessor) GetAllToilets() ([]model.Toilet, error) {
 
 // GetToilet DBのtoiletテーブルからidに合致するtoiletを1つ返す
 // 見つからなかった場合は空のtoiletとerrorを返す
-func (mda *MysqlDbAccessor) GetToilet(id int64) (model.Toilet, error) {
+func (mda *MysqlDbAccessor) GetToilet(id, uid int64) (model.Toilet, error) {
 	var toilet model.Toilet
-	err := mda.Db.SelectOne(&toilet, "SELECT * FROM toilet WHERE id = ?", id)
+	err := mda.Db.SelectOne(&toilet, "SELECT * FROM toilet WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Toilet{}, err
 	}
