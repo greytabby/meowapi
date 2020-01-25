@@ -85,11 +85,11 @@ func run() int {
 	r.DELETE("/usetoilet", useToiletHandler.DeleteUseToilet)
 
 	// Wash Endpoint
-	e.GET("/api/wash", washHandler.GetAllWashes)
-	e.GET("/api/wash/:toiletid", washHandler.GetWashesByToiletId)
-	e.POST("/api/wash", washHandler.AddWash)
-	e.PUT("/api/wash", washHandler.UpdateWash)
-	e.DELETE("/api/wash", washHandler.DeleteWash)
+	r.GET("/wash", washHandler.GetAllWashes)
+	r.GET("/wash/:toiletid", washHandler.GetWashesByToiletId)
+	r.POST("/wash", washHandler.AddWash)
+	r.PUT("/wash", washHandler.UpdateWash)
+	r.DELETE("/wash", washHandler.DeleteWash)
 
 	// Auth Endpiont
 	e.POST("/signup", authHandler.Signup)

@@ -188,10 +188,10 @@ func (mda *MysqlDbAccessor) DeleteUseToilet(usetoilet model.UseToilet) error {
 }
 
 // GetAllWashes washテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllWashes() ([]model.Wash, error) {
+func (mda *MysqlDbAccessor) GetAllWashes(uid int64) ([]model.Wash, error) {
 	var ws []model.Wash
 	_, err := mda.Db.Select(&ws,
-		"SELECT * FROM wash ORDER BY created")
+		"SELECT * FROM wash WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -199,10 +199,10 @@ func (mda *MysqlDbAccessor) GetAllWashes() ([]model.Wash, error) {
 }
 
 // GetWashesByToiletId washテーブルから特定のToiletIdの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid int64) ([]model.Wash, error) {
+func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid, uid int64) ([]model.Wash, error) {
 	var ws []model.Wash
 	_, err := mda.Db.Select(&ws,
-		"SELECT * FROM wash WHERE toiletid = ? ORDER BY created", toiletid)
+		"SELECT * FROM wash WHERE toiletid = ? AND uid = ? ORDER BY created", toiletid, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -211,9 +211,9 @@ func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid int64) ([]model.Wash, e
 
 // GetWash DBのwashテーブルからidに合致するwashを1つ返す
 // 見つからなかった場合は空のwashとerrorを返す
-func (mda *MysqlDbAccessor) GetWash(id int64) (model.Wash, error) {
+func (mda *MysqlDbAccessor) GetWash(id, uid int64) (model.Wash, error) {
 	var w model.Wash
-	err := mda.Db.SelectOne(&w, "SELECT * FROM wash WHERE id = ?", id)
+	err := mda.Db.SelectOne(&w, "SELECT * FROM wash WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Wash{}, err
 	}
