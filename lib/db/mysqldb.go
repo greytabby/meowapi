@@ -139,10 +139,10 @@ func (mda *MysqlDbAccessor) DeleteToilet(toilet model.Toilet) error {
 }
 
 // GetAllUseToilets DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllUseToilets() ([]model.UseToilet, error) {
+func (mda *MysqlDbAccessor) GetAllUseToilets(uid int64) ([]model.UseToilet, error) {
 	var usetoilets []model.UseToilet
 	_, err := mda.Db.Select(&usetoilets,
-		"SELECT * FROM usetoilet ORDER BY created")
+		"SELECT * FROM usetoilet WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +151,9 @@ func (mda *MysqlDbAccessor) GetAllUseToilets() ([]model.UseToilet, error) {
 
 // GetUseToilet DBのusetoiletテーブルからidに合致するusetoiletを1つ返す
 // 見つからなかった場合は空のusetoiletとerrorを返す
-func (mda *MysqlDbAccessor) GetUseToilet(id int64) (model.UseToilet, error) {
+func (mda *MysqlDbAccessor) GetUseToilet(id, uid int64) (model.UseToilet, error) {
 	var usetoilet model.UseToilet
-	err := mda.Db.SelectOne(&usetoilet, "SELECT * FROM usetoilet WHERE id = ?", id)
+	err := mda.Db.SelectOne(&usetoilet, "SELECT * FROM usetoilet WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.UseToilet{}, err
 	}

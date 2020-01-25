@@ -8,9 +8,10 @@ import (
 
 type UseToilet struct {
 	Id       int64     `json:"id"       db:"id,primarykey,autoincrement"`
+	UID      int64     `json:"uid"      db:"uid,notnull"`
 	ToiletId int64     `json:"toiletid" db:"toiletid,notnull"`
 	CatId    int64     `json:"catid"    db:"catid,notnull"`
-	Type     int64     `json:"type"     db:"type,notnull"`
+	Type     string    `json:"type"     db:"type,notnull,size:200"`
 	Created  time.Time `json:"created"  db:"created,notnull"`
 	Updated  time.Time `json:"updated"  db:"updated,notnull"`
 }

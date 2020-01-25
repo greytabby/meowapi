@@ -79,10 +79,10 @@ func run() int {
 	r.DELETE("/toilet", toiletHandler.DeleteToilet)
 
 	// UseToilet Endpoint
-	e.GET("/api/usetoilet", useToiletHandler.GetAllUseToilets)
-	e.POST("/api/usetoilet", useToiletHandler.AddUseToilet)
-	e.PUT("/api/usetoilet", useToiletHandler.UpdateUseToilet)
-	e.DELETE("/api/usetoilet", useToiletHandler.DeleteUseToilet)
+	r.GET("/usetoilet", useToiletHandler.GetAllUseToilets)
+	r.POST("/usetoilet", useToiletHandler.AddUseToilet)
+	r.PUT("/usetoilet", useToiletHandler.UpdateUseToilet)
+	r.DELETE("/usetoilet", useToiletHandler.DeleteUseToilet)
 
 	// Wash Endpoint
 	e.GET("/api/wash", washHandler.GetAllWashes)
