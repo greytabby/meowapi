@@ -52,7 +52,10 @@ func run() int {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Debug = true
+
+	// CORS
+	// TODO: restrict cors origin
+	e.Use(middleware.CORS())
 
 	// Create api request handler
 	catHandler := handler.CatHandler{Db: dbAccessor}
@@ -64,7 +67,6 @@ func run() int {
 	// Routing
 	// Cat Endpoint
 	// Use JWT authentication
-	// TODO: apply JWT auth to other endpoint
 	r := e.Group("/api")
 	r.Use(middleware.JWTWithConfig(handler.JWTConfig))
 	r.GET("/cat", catHandler.GetAllCats)
