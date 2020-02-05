@@ -8,8 +8,8 @@ import (
 )
 
 type CatReader interface {
-	GetAllCats() ([]model.Cat, error)
-	GetCat(id int64) (model.Cat, error)
+	GetAllCats(uid int64) ([]model.Cat, error)
+	GetCat(id, uid int64) (model.Cat, error)
 }
 
 type CatManipulator interface {
@@ -31,7 +31,8 @@ type CatHandler struct {
 
 // GetAllCats catテーブルから全てのcatを返す
 func (ch *CatHandler) GetAllCats(c echo.Context) error {
-	cats, err := ch.Db.GetAllCats()
+	uid := UserIdFromToken(c)
+	cats, err := ch.Db.GetAllCats(uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "Select: "+err.Error())
@@ -42,11 +43,14 @@ func (ch *CatHandler) GetAllCats(c echo.Context) error {
 // AddCat catテーブルへcatを1匹追加する
 func (ch *CatHandler) AddCat(c echo.Context) error {
 	var cat model.Cat
+	uid := UserIdFromToken(c)
 
 	if err := c.Bind(&cat); err != nil {
 		c.Logger().Errorf("Bind: ", err)
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
+
+	cat.UID = uid
 	if err := ch.Db.AddCat(cat); err != nil {
 		c.Logger().Errorf("Insert: ", err)
 		return c.String(http.StatusBadRequest, "Could not add new cat.")
@@ -69,7 +73,8 @@ func (ch *CatHandler) UpdateCat(c echo.Context) error {
 	}
 
 	// Get cat from db for confirming wheather the user specified cat exist.
-	selectedCat, err := ch.Db.GetCat(cat.Id)
+	uid := UserIdFromToken(c)
+	selectedCat, err := ch.Db.GetCat(cat.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified cat in the database.")
@@ -101,7 +106,8 @@ func (ch *CatHandler) DeleteCat(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Cat id is not specified.")
 	}
 
-	selectedCat, err := ch.Db.GetCat(cat.Id)
+	uid := UserIdFromToken(c)
+	selectedCat, err := ch.Db.GetCat(cat.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified cat.")

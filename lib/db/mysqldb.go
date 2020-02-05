@@ -24,10 +24,10 @@ func NewMysqlDbAccessor(dsn string) (*MysqlDbAccessor, error) {
 }
 
 // GetAllCats DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllCats() ([]model.Cat, error) {
+func (mda *MysqlDbAccessor) GetAllCats(uid int64) ([]model.Cat, error) {
 	var cats []model.Cat
 	_, err := mda.Db.Select(&cats,
-		"SELECT * FROM cat ORDER BY created")
+		"SELECT * FROM cat WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +36,9 @@ func (mda *MysqlDbAccessor) GetAllCats() ([]model.Cat, error) {
 
 // GetCat DBのcatテーブルからidに合致するcatを1つ返す
 // 見つからなかった場合は空のcatとerrorを返す
-func (mda *MysqlDbAccessor) GetCat(id int64) (model.Cat, error) {
+func (mda *MysqlDbAccessor) GetCat(id, uid int64) (model.Cat, error) {
 	var cat model.Cat
-	err := mda.Db.SelectOne(&cat, "SELECT * FROM cat WHERE id = ?", id)
+	err := mda.Db.SelectOne(&cat, "SELECT * FROM cat WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Cat{}, err
 	}
@@ -90,10 +90,10 @@ func open(dsn string) (*sql.DB, error) {
 }
 
 // GetAllToilets DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllToilets() ([]model.Toilet, error) {
+func (mda *MysqlDbAccessor) GetAllToilets(uid int64) ([]model.Toilet, error) {
 	var toilets []model.Toilet
 	_, err := mda.Db.Select(&toilets,
-		"SELECT * FROM toilet ORDER BY created")
+		"SELECT * FROM toilet WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +102,9 @@ func (mda *MysqlDbAccessor) GetAllToilets() ([]model.Toilet, error) {
 
 // GetToilet DBのtoiletテーブルからidに合致するtoiletを1つ返す
 // 見つからなかった場合は空のtoiletとerrorを返す
-func (mda *MysqlDbAccessor) GetToilet(id int64) (model.Toilet, error) {
+func (mda *MysqlDbAccessor) GetToilet(id, uid int64) (model.Toilet, error) {
 	var toilet model.Toilet
-	err := mda.Db.SelectOne(&toilet, "SELECT * FROM toilet WHERE id = ?", id)
+	err := mda.Db.SelectOne(&toilet, "SELECT * FROM toilet WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Toilet{}, err
 	}
@@ -139,10 +139,10 @@ func (mda *MysqlDbAccessor) DeleteToilet(toilet model.Toilet) error {
 }
 
 // GetAllUseToilets DBからcatテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllUseToilets() ([]model.UseToilet, error) {
+func (mda *MysqlDbAccessor) GetAllUseToilets(uid int64) ([]model.UseToilet, error) {
 	var usetoilets []model.UseToilet
 	_, err := mda.Db.Select(&usetoilets,
-		"SELECT * FROM usetoilet ORDER BY created")
+		"SELECT * FROM usetoilet WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +151,9 @@ func (mda *MysqlDbAccessor) GetAllUseToilets() ([]model.UseToilet, error) {
 
 // GetUseToilet DBのusetoiletテーブルからidに合致するusetoiletを1つ返す
 // 見つからなかった場合は空のusetoiletとerrorを返す
-func (mda *MysqlDbAccessor) GetUseToilet(id int64) (model.UseToilet, error) {
+func (mda *MysqlDbAccessor) GetUseToilet(id, uid int64) (model.UseToilet, error) {
 	var usetoilet model.UseToilet
-	err := mda.Db.SelectOne(&usetoilet, "SELECT * FROM usetoilet WHERE id = ?", id)
+	err := mda.Db.SelectOne(&usetoilet, "SELECT * FROM usetoilet WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.UseToilet{}, err
 	}
@@ -188,10 +188,10 @@ func (mda *MysqlDbAccessor) DeleteUseToilet(usetoilet model.UseToilet) error {
 }
 
 // GetAllWashes washテーブルの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetAllWashes() ([]model.Wash, error) {
+func (mda *MysqlDbAccessor) GetAllWashes(uid int64) ([]model.Wash, error) {
 	var ws []model.Wash
 	_, err := mda.Db.Select(&ws,
-		"SELECT * FROM wash ORDER BY created")
+		"SELECT * FROM wash WHERE uid = ? ORDER BY created", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -199,10 +199,10 @@ func (mda *MysqlDbAccessor) GetAllWashes() ([]model.Wash, error) {
 }
 
 // GetWashesByToiletId washテーブルから特定のToiletIdの全てのデータを取得する
-func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid int64) ([]model.Wash, error) {
+func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid, uid int64) ([]model.Wash, error) {
 	var ws []model.Wash
 	_, err := mda.Db.Select(&ws,
-		"SELECT * FROM wash WHERE toiletid = ? ORDER BY created", toiletid)
+		"SELECT * FROM wash WHERE toiletid = ? AND uid = ? ORDER BY created", toiletid, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -211,9 +211,9 @@ func (mda *MysqlDbAccessor) GetWashesByToiletId(toiletid int64) ([]model.Wash, e
 
 // GetWash DBのwashテーブルからidに合致するwashを1つ返す
 // 見つからなかった場合は空のwashとerrorを返す
-func (mda *MysqlDbAccessor) GetWash(id int64) (model.Wash, error) {
+func (mda *MysqlDbAccessor) GetWash(id, uid int64) (model.Wash, error) {
 	var w model.Wash
-	err := mda.Db.SelectOne(&w, "SELECT * FROM wash WHERE id = ?", id)
+	err := mda.Db.SelectOne(&w, "SELECT * FROM wash WHERE id = ? AND uid = ?", id, uid)
 	if err != nil {
 		return model.Wash{}, err
 	}

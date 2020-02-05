@@ -51,7 +51,11 @@ func run() int {
 	// prepare middleware
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.Debug = true
+	e.Use(middleware.Recover())
+
+	// CORS
+	// TODO: restrict cors origin
+	e.Use(middleware.CORS())
 
 	// Create api request handler
 	catHandler := handler.CatHandler{Db: dbAccessor}
@@ -62,29 +66,32 @@ func run() int {
 
 	// Routing
 	// Cat Endpoint
-	e.GET("/api/cat", catHandler.GetAllCats)
-	e.POST("/api/cat", catHandler.AddCat)
-	e.PUT("/api/cat", catHandler.UpdateCat)
-	e.DELETE("/api/cat", catHandler.DeleteCat)
+	// Use JWT authentication
+	r := e.Group("/api")
+	r.Use(middleware.JWTWithConfig(handler.JWTConfig))
+	r.GET("/cat", catHandler.GetAllCats)
+	r.POST("/cat", catHandler.AddCat)
+	r.PUT("/cat", catHandler.UpdateCat)
+	r.DELETE("/cat", catHandler.DeleteCat)
 
 	// Toilet Endpoint
-	e.GET("/api/toilet", toiletHandler.GetAllToilets)
-	e.POST("/api/toilet", toiletHandler.AddToilet)
-	e.PUT("/api/toilet", toiletHandler.UpdateToilet)
-	e.DELETE("/api/toilet", toiletHandler.DeleteToilet)
+	r.GET("/toilet", toiletHandler.GetAllToilets)
+	r.POST("/toilet", toiletHandler.AddToilet)
+	r.PUT("/toilet", toiletHandler.UpdateToilet)
+	r.DELETE("/toilet", toiletHandler.DeleteToilet)
 
 	// UseToilet Endpoint
-	e.GET("/api/usetoilet", useToiletHandler.GetAllUseToilets)
-	e.POST("/api/usetoilet", useToiletHandler.AddUseToilet)
-	e.PUT("/api/usetoilet", useToiletHandler.UpdateUseToilet)
-	e.DELETE("/api/usetoilet", useToiletHandler.DeleteUseToilet)
+	r.GET("/usetoilet", useToiletHandler.GetAllUseToilets)
+	r.POST("/usetoilet", useToiletHandler.AddUseToilet)
+	r.PUT("/usetoilet", useToiletHandler.UpdateUseToilet)
+	r.DELETE("/usetoilet", useToiletHandler.DeleteUseToilet)
 
 	// Wash Endpoint
-	e.GET("/api/wash", washHandler.GetAllWashes)
-	e.GET("/api/wash/:toiletid", washHandler.GetWashesByToiletId)
-	e.POST("/api/wash", washHandler.AddWash)
-	e.PUT("/api/wash", washHandler.UpdateWash)
-	e.DELETE("/api/wash", washHandler.DeleteWash)
+	r.GET("/wash", washHandler.GetAllWashes)
+	r.GET("/wash/:toiletid", washHandler.GetWashesByToiletId)
+	r.POST("/wash", washHandler.AddWash)
+	r.PUT("/wash", washHandler.UpdateWash)
+	r.DELETE("/wash", washHandler.DeleteWash)
 
 	// Auth Endpiont
 	e.POST("/signup", authHandler.Signup)

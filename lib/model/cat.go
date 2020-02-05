@@ -8,6 +8,7 @@ import (
 
 type Cat struct {
 	Id      int64     `json:"id"      db:"id,primarykey,autoincrement"`
+	UID     int64     `json:"uid"     db:"uid,notnull"`
 	Name    string    `json:"name"    db:"name,notnull,size:200"`
 	Breed   string    `json:"breed"   db:"breed,size:200"`
 	Gender  string    `json:"gender"  db:"gender,size:200"`

@@ -8,8 +8,8 @@ import (
 )
 
 type UseToiletReader interface {
-	GetAllUseToilets() ([]model.UseToilet, error)
-	GetUseToilet(id int64) (model.UseToilet, error)
+	GetAllUseToilets(uid int64) ([]model.UseToilet, error)
+	GetUseToilet(id, uid int64) (model.UseToilet, error)
 }
 
 type UseToiletManipulator interface {
@@ -31,7 +31,8 @@ type UseToiletHandler struct {
 
 // GetAllUseToilets UseToiletテーブルから全てのUseToiletを返す
 func (th *UseToiletHandler) GetAllUseToilets(c echo.Context) error {
-	usetoilets, err := th.Db.GetAllUseToilets()
+	uid := UserIdFromToken(c)
+	usetoilets, err := th.Db.GetAllUseToilets(uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "Select: "+err.Error())
@@ -47,6 +48,9 @@ func (th *UseToiletHandler) AddUseToilet(c echo.Context) error {
 		c.Logger().Errorf("Bind: ", err)
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
+
+	uid := UserIdFromToken(c)
+	usetoilet.UID = uid
 	if err := th.Db.AddUseToilet(usetoilet); err != nil {
 		c.Logger().Errorf("Insert: ", err)
 		return c.String(http.StatusBadRequest, "Could not add new usetoilet.")
@@ -69,7 +73,8 @@ func (th *UseToiletHandler) UpdateUseToilet(c echo.Context) error {
 	}
 
 	// Get cat from db for confirming wheather the user specified cat exist.
-	selectedUseToilet, err := th.Db.GetUseToilet(usetoilet.Id)
+	uid := UserIdFromToken(c)
+	selectedUseToilet, err := th.Db.GetUseToilet(usetoilet.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified cat in the database.")
@@ -100,7 +105,8 @@ func (th *UseToiletHandler) DeleteUseToilet(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "UseToilet id is not specified.")
 	}
 
-	selectedUseToilet, err := th.Db.GetUseToilet(usetoilet.Id)
+	uid := UserIdFromToken(c)
+	selectedUseToilet, err := th.Db.GetUseToilet(usetoilet.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusBadRequest, "No your specified usetoilet.")

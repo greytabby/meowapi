@@ -21,7 +21,7 @@ type jwtCustomClaims struct {
 
 var signingKey = []byte(os.Getenv("JWT_SIGNING_KEY"))
 
-var Config = middleware.JWTConfig{
+var JWTConfig = middleware.JWTConfig{
 	Claims:     &jwtCustomClaims{},
 	SigningKey: signingKey,
 }
@@ -107,7 +107,7 @@ func (ah *AuthHandler) Login(c echo.Context) error {
 	}
 
 	// create jwttoken
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString(signingKey)
 	if err != nil {
 		c.Logger().Errorf("Login: create token failed", err)

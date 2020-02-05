@@ -8,6 +8,7 @@ import (
 
 type Wash struct {
 	Id       int64     `json:"id"       db:"id,primarykey,autoincrement"`
+	UID      int64     `json:"uid"      db:"uid,notnull"`
 	ToiletId int64     `json:"toiletid" db:"toiletid,notnull"`
 	Comment  string    `json:"comment"  db:"comment,size:400"`
 	Created  time.Time `json:"created"  db:"created,notnull"`

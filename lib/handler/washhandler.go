@@ -10,9 +10,9 @@ import (
 
 // WashReader washテーブルを参照する
 type WashReader interface {
-	GetAllWashes() ([]model.Wash, error)
-	GetWashesByToiletId(toiletid int64) ([]model.Wash, error)
-	GetWash(id int64) (model.Wash, error)
+	GetAllWashes(uid int64) ([]model.Wash, error)
+	GetWashesByToiletId(toiletid, uid int64) ([]model.Wash, error)
+	GetWash(id, uid int64) (model.Wash, error)
 }
 
 // WashManipulater washテーブルを操作する
@@ -35,7 +35,8 @@ type WashHandler struct {
 
 // GetAllWashed 全てのwashを取得する
 func (wh *WashHandler) GetAllWashes(c echo.Context) error {
-	washes, err := wh.Db.GetAllWashes()
+	uid := UserIdFromToken(c)
+	washes, err := wh.Db.GetAllWashes(uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusInternalServerError, "Select: "+err.Error())
@@ -50,7 +51,8 @@ func (wh *WashHandler) GetWashesByToiletId(c echo.Context) error {
 		c.Logger().Errorf("Param parse: ", err)
 		return c.String(http.StatusBadRequest, "Param parse: "+err.Error())
 	}
-	washes, err := wh.Db.GetWashesByToiletId(toiletid)
+	uid := UserIdFromToken(c)
+	washes, err := wh.Db.GetWashesByToiletId(toiletid, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusInternalServerError, "Select: "+err.Error())
@@ -65,6 +67,8 @@ func (wh *WashHandler) AddWash(c echo.Context) error {
 		c.Logger().Errorf("Bind: ", err)
 		return c.String(http.StatusBadRequest, "Bind: "+err.Error())
 	}
+	uid := UserIdFromToken(c)
+	w.UID = uid
 	if err := wh.Db.AddWash(w); err != nil {
 		c.Logger().Error("Insert: ", err)
 		return c.String(http.StatusInternalServerError, "Could not add wash.")
@@ -85,7 +89,8 @@ func (wh *WashHandler) UpdateWash(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Wash id was not specifyed.")
 	}
 
-	selected, err := wh.Db.GetWash(w.Id)
+	uid := UserIdFromToken(c)
+	selected, err := wh.Db.GetWash(w.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusInternalServerError, "Select: "+err.Error())
@@ -100,7 +105,7 @@ func (wh *WashHandler) UpdateWash(c echo.Context) error {
 	return c.JSON(http.StatusOK, w)
 }
 
-// UpdateWash washを1件削除する
+// DeleteWash washを1件削除する
 func (wh *WashHandler) DeleteWash(c echo.Context) error {
 	var w, selected model.Wash
 	if err := c.Bind(&w); err != nil {
@@ -112,7 +117,8 @@ func (wh *WashHandler) DeleteWash(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Wash id was not specifyed.")
 	}
 
-	selected, err := wh.Db.GetWash(w.Id)
+	uid := UserIdFromToken(c)
+	selected, err := wh.Db.GetWash(w.Id, uid)
 	if err != nil {
 		c.Logger().Errorf("Select: ", err)
 		return c.String(http.StatusInternalServerError, "Select: "+err.Error())
